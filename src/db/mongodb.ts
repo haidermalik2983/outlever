@@ -6,25 +6,28 @@ if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable');
 }
 
-
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
+  isConnected: boolean;
 }
-
 
 declare global {
   var mongoose: MongooseCache | undefined;
 }
 
-const cached = global.mongoose || { conn: null, promise: null };
+const cached = global.mongoose || { 
+  conn: null, 
+  promise: null,
+  isConnected: false
+};
 
 if (!global.mongoose) {
   global.mongoose = cached;
 }
 
-async function connectToDatabase() {
-  if (cached.conn) {
+export async function connectToDatabase() {
+  if (cached.isConnected) {
     return cached.conn;
   }
 
@@ -34,11 +37,23 @@ async function connectToDatabase() {
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
+      console.log('MongoDB connected successfully');
       return mongoose;
     });
   }
-  cached.conn = await cached.promise;
+  
+  try {
+    cached.conn = await cached.promise;
+    cached.isConnected = true;
+  } catch (error) {
+    cached.promise = null;
+    throw error;
+  }
+
   return cached.conn;
 }
+
+// Connect to MongoDB at startup
+connectToDatabase().catch(err => console.error('Failed to connect to MongoDB:', err));
 
 export default connectToDatabase; 

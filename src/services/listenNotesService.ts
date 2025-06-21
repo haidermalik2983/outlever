@@ -1,3 +1,4 @@
+import { PodcastEpisode } from '@/types';
 import axios from 'axios';
 
 const LISTEN_NOTES_API_KEY = process.env.LISTEN_NOTES_API_KEY;
@@ -10,31 +11,6 @@ const api = axios.create({
     'X-ListenAPI-Key': LISTEN_NOTES_API_KEY,
   },
 });
-
-export interface PodcastEpisode {
-  id: string;
-  title: string;
-  description: string;
-  description_highlighted: string;
-  title_original: string;
-  audio: string;
-  image: string;
-  thumbnail: string;
-  podcast: {
-    id: string;
-    title: string;
-    publisher: string;
-  };
-  audio_length_sec: number;
-  pub_date_ms: number;
-}
-
-export interface SearchResponse {
-  results: PodcastEpisode[];
-  next_offset: number;
-  count: number;
-  total: number;
-}
 
 export async function searchPodcasts(query: string, limit = 10, page = 1): Promise<PodcastEpisode[]> {
   try {
