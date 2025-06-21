@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import { PodcastEpisode } from '@/lib/services/listenNotesService';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { PodcastEpisode } from '@/types';
 
 interface PodcastCardProps {
   episode: PodcastEpisode;
@@ -10,7 +10,6 @@ interface PodcastCardProps {
 }
 
 export default function PodcastCard({ episode, onSummarize, isLoading = false }: PodcastCardProps) {
-  // Format the duration from seconds to minutes
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     return `${minutes} min`;
